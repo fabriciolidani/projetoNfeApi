@@ -10,6 +10,12 @@ const InformacoesManifestoSchema = new Schema({
   ultNsu:{
     type: String,
     required: true
+  },
+  maxNsuDatabase:{
+    type: String
+  },
+  lastJobRun:{
+    type: String
   }
 });
 

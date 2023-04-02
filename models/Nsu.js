@@ -41,6 +41,10 @@ const NsuSchema = new Schema({
     emissao: {
         type: String,
         required: true
+    },
+    manifestado: {
+        type: String,
+        //required: true
     }
 });
 

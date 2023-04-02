@@ -4,16 +4,22 @@ const zlib = require('zlib');
 const convert = require('xml-js');
 const { DistribuicaoDFe, RecepcaoEvento } = require('node-mde');
 const consultarNsu = require('../database/consultarNsu');
+const adicionarNsu = require('../database/adicionarNsu');
 
 module.exports = async (req, res) => {
-  const nsuNfe = req.params.nsuNfe;
+  var nsuNfe = ""
+  if (req.params) {
+     nsuNfe = req.params.nsuNfe;
+  } else {
+    nsuNfe = req.nsuNfe
+  }
   console.log(nsuNfe)
   try {
     var resposta = []
     const findNsus = await consultarNsu()
 
     findNsus.forEach(element => {
-      resposta.push(element.idNsu + "||" + element.cnpj + "||" + element.nome + "||" + element.nfe + "||" + element.valor + "||" + element.tipo + "||" + element.situacao + "||" + element.numero + "||" + element.ie + "||" + element.emissao)
+      resposta.push(element.idNsu + "||" + element.cnpj + "||" + element.nome + "||" + element.nfe + "||" + element.valor + "||" + element.tipo + "||" + element.situacao + "||" + element.numero + "||" + element.ie + "||" + element.emissao + "||" + element.manifestado)
     });
 
     const distribuicao = new DistribuicaoDFe({
@@ -24,14 +30,15 @@ module.exports = async (req, res) => {
       tpAmb: '1',
     })
     //const consulta = await distribuicao.consultaUltNSU('000000000009530')
-    const consulta = await distribuicao.consultaUltNSU('000000000009800')
-
+    const consulta = await distribuicao.consultaUltNSU(nsuNfe)
+    const maxNsu = consulta.data.maxNSU
     if (consulta.error) {
       throw new Error(consulta.error)
     }
     //trata res.Xml
     var options = { compact: true };
     var result = convert.xml2json(consulta.resXml, options)
+
     const objetoResXmlJson = JSON.parse(result)
     // percorrer os objetos docZip
     if (objetoResXmlJson["soap:Envelope"] &&
@@ -55,9 +62,9 @@ module.exports = async (req, res) => {
 
 
         if (objetoTipo["resNFe"] !== undefined) {
-          resposta.push(objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"][i]["_attributes"]["NSU"] + "||" + objetoTipo["resNFe"]["CNPJ"]["_text"] + "||" + objetoTipo["resNFe"]["xNome"]["_text"] + "||" + objetoTipo["resNFe"]["chNFe"]["_text"] + "||" + objetoTipo["resNFe"]["vNF"]["_text"] + "||" + objetoTipo["resNFe"]["tpNF"]["_text"] + "||" + objetoTipo["resNFe"]["cSitNFe"]["_text"] + "||" + objetoTipo["resNFe"]["nProt"]["_text"] + "||" + objetoTipo["resNFe"]["IE"]["_text"] + "||" + objetoTipo["resNFe"]["dhEmi"]["_text"])
+
           const criarNsu = {
-            idNsu: objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"]["_attributes"]["NSU"],
+            idNsu: objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"][i]["_attributes"]["NSU"],
             cnpj: objetoTipo["resNFe"]["CNPJ"]["_text"],
             nome: objetoTipo["resNFe"]["xNome"]["_text"],
             nfe: objetoTipo["resNFe"]["chNFe"]["_text"],
@@ -68,19 +75,29 @@ module.exports = async (req, res) => {
             ie: objetoTipo["resNFe"]["IE"]["_text"],
             emissao: objetoTipo["resNFe"]["dhEmi"]["_text"]
           }
-          const stringProcurada = objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"]["_attributes"]["NSU"];
+          const stringProcurada = objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"][i]["_attributes"]["NSU"]
           const stringExisteNoArray = resposta.some(objeto =>
             objeto.includes(stringProcurada)
           );
           if (!stringExisteNoArray) {
 
             const testeAdicao = adicionarNsu(criarNsu)
+            resposta.push(objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"][i]["_attributes"]["NSU"] + "||" + objetoTipo["resNFe"]["CNPJ"]["_text"] + "||" + objetoTipo["resNFe"]["xNome"]["_text"] + "||" + objetoTipo["resNFe"]["chNFe"]["_text"] + "||" + objetoTipo["resNFe"]["vNF"]["_text"] + "||" + objetoTipo["resNFe"]["tpNF"]["_text"] + "||" + objetoTipo["resNFe"]["cSitNFe"]["_text"] + "||" + objetoTipo["resNFe"]["nProt"]["_text"] + "||" + objetoTipo["resNFe"]["IE"]["_text"] + "||" + objetoTipo["resNFe"]["dhEmi"]["_text"])
           }
+
         }
       }
     }
-    console.log(resposta);
-    res.status(200).json(resposta)
+    const objeto = {
+      resposta: resposta,
+      maxNsu: maxNsu
+    }
+    console.log(objeto);
+    if (req.params) {
+      res.status(200).json(objeto)
+    } else {
+      return objeto
+    }
   } catch (error) {
     console.log(error)
   };

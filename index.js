@@ -2,6 +2,28 @@ const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
 const cors = require('cors')
+const schedule = require('node-schedule');
+const executarJob = require('./routes/jobs/jobs'); // caminho para o arquivo jobs.js
+const InformacoesManifesto = require('./models/InformacoesManifesto')
+const Nsu = require('./models/Nsu')
+
+async function atualizarMaxNsuDatabase() {
+  const maxIdNsu = await Nsu.find().sort({ idNsu: -1 }).limit(1).exec();
+  const maxNsu = maxIdNsu[0].idNsu;
+  await InformacoesManifesto.updateOne({}, { maxNsuDatabase: maxNsu }).exec();
+  console.log("Atualizando campo maxNsuDatabase")
+}
+
+setInterval(atualizarMaxNsuDatabase, 10000); // atualiza a cada 10 segundos
+
+(async function() {
+  // execute outras funções antes de agendar o job
+
+  await executarJob(); // chame a função do job
+  //console.log("teste")
+
+  // execute outras funções após agendar o job
+})();
 
 app.use(
   express.urlencoded({
@@ -54,6 +76,7 @@ mongoose.connect(dbUri, {
   keepAlive: true, // mantém a conexão viva mesmo quando ociosa
 }).then(() => {
   console.log('Inicializando...' + '\n' + 'Conexão com o banco realizada com sucesso!')
+  //registerChangeStream(db);
   app.listen(3000)
 })
   .catch((err) => {

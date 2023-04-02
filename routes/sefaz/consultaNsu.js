@@ -4,10 +4,13 @@ const zlib = require('zlib');
 const convert = require('xml-js');
 const { DistribuicaoDFe, RecepcaoEvento } = require('node-mde');
 const adicionarNsu = require('../database/adicionarNsu');
+const consultarNsu = require('../database/consultarNsu');
 
 //---consulta NSU API SEFAZ---//
 module.exports = async (req, res) => {
-    const nsu = req.params.nsu;
+    var tipo = req.body.tipo;
+    console.log(tipo)
+    const nsu = req.body.nsu;
     console.log(nsu)
     try {
         const distribuicao = new DistribuicaoDFe({
@@ -17,6 +20,7 @@ module.exports = async (req, res) => {
             cUFAutor: '43',
             tpAmb: '1',
         })
+
         const consulta = await distribuicao.consultaNSU(nsu)
 
         if (consulta.error) {
@@ -30,6 +34,7 @@ module.exports = async (req, res) => {
 
         // percorrer os objetos docZip
         var resposta = []
+
         if (objetoResXmlJson["soap:Envelope"] &&
             objetoResXmlJson["soap:Envelope"]["soap:Body"] &&
             objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"] &&
@@ -73,25 +78,44 @@ module.exports = async (req, res) => {
                         resposta.push(objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"]["_attributes"]["NSU"] + "||" + objetoTipo["resNFe"]["CNPJ"]["_text"] + "||" + objetoTipo["resNFe"]["xNome"]["_text"] + "||" + objetoTipo["resNFe"]["chNFe"]["_text"] + "||" + objetoTipo["resNFe"]["vNF"]["_text"] + "||" + objetoTipo["resNFe"]["tpNF"]["_text"] + "||" + objetoTipo["resNFe"]["cSitNFe"]["_text"] + "||" + objetoTipo["resNFe"]["nProt"]["_text"] + "||" + objetoTipo["resNFe"]["IE"]["_text"] + "||" + objetoTipo["resNFe"]["dhEmi"]["_text"])
                         const criarNsu = {
                             idNsu: objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"]["_attributes"]["NSU"],
-                            cnpj: objetoTipo["resNFe"]["CNPJ"]["_text"] ,
-                            nome:objetoTipo["resNFe"]["xNome"]["_text"],
-                            nfe: objetoTipo["resNFe"]["chNFe"]["_text"] ,
-                            valor:  objetoTipo["resNFe"]["vNF"]["_text"],
-                            tipo: objetoTipo["resNFe"]["tpNF"]["_text"] ,
-                            situacao:  objetoTipo["resNFe"]["cSitNFe"]["_text"] ,
-                            numero:  objetoTipo["resNFe"]["nProt"]["_text"],
+                            cnpj: objetoTipo["resNFe"]["CNPJ"]["_text"],
+                            nome: objetoTipo["resNFe"]["xNome"]["_text"],
+                            nfe: objetoTipo["resNFe"]["chNFe"]["_text"],
+                            valor: objetoTipo["resNFe"]["vNF"]["_text"],
+                            tipo: objetoTipo["resNFe"]["tpNF"]["_text"],
+                            situacao: objetoTipo["resNFe"]["cSitNFe"]["_text"],
+                            numero: objetoTipo["resNFe"]["nProt"]["_text"],
                             ie: objetoTipo["resNFe"]["IE"]["_text"],
                             emissao: objetoTipo["resNFe"]["dhEmi"]["_text"]
                         }
-                        const testeAdicao = adicionarNsu(criarNsu)
-                        const testeQ = "asdsadsa";
-
+                        const stringProcurada = objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"]["_attributes"]["NSU"]
+                        const stringExisteNoArray = resposta.some(objeto =>
+                            objeto.includes(stringProcurada)
+                        );
+                        if (!stringExisteNoArray) {
+                            const testeAdicao = adicionarNsu(criarNsu)
+                            const testeQ = "asdsadsa";
+                        }
                     }
                 }
             }
         }
-        console.log(resposta);
-        res.status(200).json(resposta)
+        if (tipo == '1'){
+            const findNsus = await consultarNsu()
+
+            findNsus.forEach(element => {
+                if (element.idNsu > nsu) {
+                    resposta.push(element.idNsu + "||" + element.cnpj + "||" + element.nome + "||" + element.nfe + "||" + element.valor + "||" + element.tipo + "||" + element.situacao + "||" + element.numero + "||" + element.ie + "||" + element.emissao + "||" + element.manifestado)
+                }
+            });
+    }
+        const objResposta = {
+            resposta: resposta
+        }
+        console.log(objResposta);
+        console.log("responde");
+        console.log(tipo);
+        res.status(200).json(objResposta)
     } catch (error) {
         console.log(error)
     };
