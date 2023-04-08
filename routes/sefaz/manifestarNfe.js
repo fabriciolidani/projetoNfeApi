@@ -20,6 +20,7 @@ const atualizarNsu = require('../database/atualizarNsu');
 module.exports = async (req, res) => {
   const valoresSelecionados = req.params.valoresSelecionados;
   const sequencial = parseInt(req.body.payload.sequencial);
+  const tipoManifestacao = parseInt(req.body.payload.tipoManifestacao);
   const valores = [];
   var files = [];
   valoresSelecionados.split(',').forEach(part => {
@@ -40,7 +41,7 @@ module.exports = async (req, res) => {
     valores.forEach(nsu => {
       lote.push({
         chNFe: nsu,
-        tipoEvento: 210210,
+        tipoEvento: tipoManifestacao == 1 ? 210210 : 210200, //210210 - Ciencia da Operacao | 210200 - Confirmacao da Operacao
       })
     });
     const recepcao = new RecepcaoEvento({
@@ -148,7 +149,7 @@ module.exports = async (req, res) => {
             arquivosXml.push('respostaEventos' + xMotivo);
             res.status(200).json(arquivosXml)
           } else {
-
+            ///////////////////////---
             res.status(210).json('Consumo Indevido! você efetuou 20 manifestações e ou consultas no período de uma hora. Tente novamente mais tarde')
           }
         })

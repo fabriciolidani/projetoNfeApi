@@ -982,6 +982,13 @@
     "readable-stream" "^3.0.2"
     "typedarray" "^0.0.6"
 
+"consultar-cnpj@^1.0.15":
+  "integrity" "sha512-C+kwh0gW4XPnKEx9QrnNt/U952W4J4UN/Z4zsfXMeog4Xf23QJbjFiLP/3N619djuH8dJKuRYtUGRyiWYrJqmw=="
+  "resolved" "https://registry.npmjs.org/consultar-cnpj/-/consultar-cnpj-1.0.15.tgz"
+  "version" "1.0.15"
+  dependencies:
+    "axios" "^0.21.1"
+
 "content-disposition@0.5.4":
   "integrity" "sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ=="
   "resolved" "https://registry.npmjs.org/content-disposition/-/content-disposition-0.5.4.tgz"

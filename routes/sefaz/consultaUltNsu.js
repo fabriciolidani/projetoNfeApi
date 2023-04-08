@@ -5,15 +5,18 @@ const convert = require('xml-js');
 const { DistribuicaoDFe, RecepcaoEvento } = require('node-mde');
 const consultarNsu = require('../database/consultarNsu');
 const adicionarNsu = require('../database/adicionarNsu');
+const consultaCnpjTeste = require ("consultar-cnpj")
 
 module.exports = async (req, res) => {
+  //julio no rota api rm
+  //const testeCNPJ = await consultaCnpjTeste("37700472000167")
   var nsuNfe = ""
   if (req.params) {
      nsuNfe = req.params.nsuNfe;
   } else {
     nsuNfe = req.nsuNfe
   }
-  console.log(nsuNfe)
+  //console.log(nsuNfe)
   try {
     var resposta = []
     const findNsus = await consultarNsu()
@@ -56,8 +59,6 @@ module.exports = async (req, res) => {
         var options = { compact: true };
         var result = convert.xml2json(teste, options);
         const objetoTipo = JSON.parse(result)
-        console.log(objetoTipo)
-        console.log("[%o]", objetoTipo);
 
 
 
@@ -92,7 +93,6 @@ module.exports = async (req, res) => {
       resposta: resposta,
       maxNsu: maxNsu
     }
-    console.log(objeto);
     if (req.params) {
       res.status(200).json(objeto)
     } else {

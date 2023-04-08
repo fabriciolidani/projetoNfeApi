@@ -11,37 +11,14 @@ async function atualizarMaxNsuDatabase() {
   const maxIdNsu = await Nsu.find().sort({ idNsu: -1 }).limit(1).exec();
   const maxNsu = maxIdNsu[0].idNsu;
   await InformacoesManifesto.updateOne({}, { maxNsuDatabase: maxNsu }).exec();
-  console.log("Atualizando campo maxNsuDatabase")
+  //console.log("Atualizando campo maxNsuDatabase")
 }
 
 setInterval(atualizarMaxNsuDatabase, 10000); // atualiza a cada 10 segundos
 
-(async function() {
-  // execute outras funções antes de agendar o job
-
-  await executarJob(); // chame a função do job
-  //console.log("teste")
-
-  // execute outras funções após agendar o job
-})();
-
-app.use(
-  express.urlencoded({
-    extended: true
-  }),
-)
-app.use(express.json())
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*")
-  app.use(cors());
-  next();
-});
-
-//rota inicial / endpoint
-app.get('/', (req, res) => {
-  res.json({ message: "oi Express" })
-})
-
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
 
 ///////////////////////////--SEFAZ--///////////////////////////
 const consultaChNFe = require('./routes/sefaz/consultaChNfe');
@@ -56,7 +33,6 @@ app.post('/consultaUltNSU/:nsuNfe', consultaUltNSU);
 const consultaNSU = require('./routes/sefaz/consultaNsu');
 app.post('/consultaNSU/:nsu', consultaNSU);
 
-
 ///////////////////////////--DATABASE--///////////////////////////
 const consultarInformacoesManifesto = require('./routes/database/consultarInformacoesManifesto');
 app.get('/informacoesManifesto/:id', consultarInformacoesManifesto);
@@ -64,6 +40,21 @@ app.get('/informacoesManifesto/:id', consultarInformacoesManifesto);
 const atualizarInformacoesManifesto = require('./routes/database/atualizarInformacoesManifesto');
 app.patch('/informacoesManifesto/:id', atualizarInformacoesManifesto);
 
+const consultarNsuDatabase = require('./routes/database/consultarNsu');
+app.get('/consultarNsuDatabase', consultarNsuDatabase);
+
+//rota inicial / endpoint
+app.get('/', (req, res) => {
+  res.json({ message: "oi Express" })
+})
+// defina um middleware de redirecionamento
+app.use((req, res, next) => {
+  if (req.originalUrl !== '/') { // verifique se a URL não é a rota inicial
+    res.redirect('/'); // redirecione o usuário de volta à rota inicial
+  } else {
+    next(); // passe o controle para a próxima rota
+  }
+});
 
 //---MONGO DB entregar porta para disponibilizar/escutar aplicação---//
 const dbUri = 'mongodb+srv://fabriciolidani:7ubgCswPWhxDHmbx@apiclusternfe.liy6tgi.mongodb.net/?retryWrites=true&w=majority'
