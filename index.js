@@ -20,6 +20,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
+///////////////////////////--APICNPJ--///////////////////////////
+const consultaCNPJ = require('./routes/sefaz/consultaCNPJ');
+app.post('/consultaCNPJ/:cnpj', consultaCNPJ);
+
 ///////////////////////////--SEFAZ--///////////////////////////
 const consultaChNFe = require('./routes/sefaz/consultaChNfe');
 app.post('/consultaChNFe/:chNfe', consultaChNFe);
