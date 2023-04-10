@@ -5,9 +5,10 @@ const consultaCnpjTeste = require ("consultar-cnpj")
 
 module.exports = async (req, res) => {
   const cnpj = req.params.cnpj;
+  const data = req.body.cnpj;
 
   try {
-  const testeCNPJ = await consultaCnpjTeste(cnpj)
+  const testeCNPJ = await consultaCnpjTeste(data)
     res.send(testeCNPJ);
   } catch (error) {
     console.error(error);
