@@ -9,9 +9,7 @@ const consultarNsu = require('../database/consultarNsu');
 //---consulta NSU API SEFAZ---//
 module.exports = async (req, res) => {
     var tipo = req.body.tipo;
-    console.log(tipo)
     const nsu = req.body.nsu;
-    console.log(nsu)
     try {
         const distribuicao = new DistribuicaoDFe({
             pfx: fs.readFileSync('./arquivos/MILENGENHARIA.pfx'),
@@ -112,9 +110,6 @@ module.exports = async (req, res) => {
         const objResposta = {
             resposta: resposta
         }
-        console.log(objResposta);
-        console.log("responde");
-        console.log(tipo);
         res.status(200).json(objResposta)
     } catch (error) {
         console.log(error)

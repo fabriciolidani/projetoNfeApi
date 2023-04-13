@@ -19,7 +19,6 @@ module.exports = async (req, res) => {
     const xmlZip = consulta.data;
     const xmlBuffer = await unzipper.Open.buffer(xmlZip);
     const xml = await xmlBuffer.files[0].buffer.toString('utf8');
-    console.log(xml)
     fs.writeFileSync('nfe.xml', xml);
     res.send(xml);
   } catch (error) {

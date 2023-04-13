@@ -13,7 +13,7 @@ async function atualizarMaxNsuDatabase() {
   await InformacoesManifesto.updateOne({}, { maxNsuDatabase: maxNsu }).exec();
   //console.log("Atualizando campo maxNsuDatabase")
 }
-
+executarJob();
 setInterval(atualizarMaxNsuDatabase, 10000); // atualiza a cada 10 segundos
 
 app.use(express.urlencoded({ extended: true }));
@@ -27,6 +27,11 @@ app.post('/consultaCNPJ/:cnpj', consultaCNPJ);
 ///////////////////////////--SEFAZ--///////////////////////////
 const consultaChNFe = require('./routes/sefaz/consultaChNfe');
 app.post('/consultaChNFe/:chNfe', consultaChNFe);
+
+
+const persistirInformacoesRm = require('./routes/sefaz/persistirInformacoesRm');
+app.post('/persistirInformacoesRm/:corpoSaveRecordRm', persistirInformacoesRm);
+
 
 const manifestarNFE = require('./routes/sefaz/manifestarNfe');
 app.post('/manifestarNFE/:valoresSelecionados', manifestarNFE);

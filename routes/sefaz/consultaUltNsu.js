@@ -5,7 +5,6 @@ const convert = require('xml-js');
 const { DistribuicaoDFe, RecepcaoEvento } = require('node-mde');
 const consultarNsu = require('../database/consultarNsu');
 const adicionarNsu = require('../database/adicionarNsu');
-const consultaCnpjTeste = require ("consultar-cnpj")
 
 module.exports = async (req, res) => {
   //julio no rota api rm
@@ -59,8 +58,6 @@ module.exports = async (req, res) => {
         var options = { compact: true };
         var result = convert.xml2json(teste, options);
         const objetoTipo = JSON.parse(result)
-
-
 
         if (objetoTipo["resNFe"] !== undefined) {
 
