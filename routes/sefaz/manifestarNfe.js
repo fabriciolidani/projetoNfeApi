@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
     valores.push(part);
   });
   //valores.push('43230332451006000252550030000055621588282224');
-  
+
   const distribuicao = new DistribuicaoDFe({
     pfx: fs.readFileSync('./arquivos/MILENGENHARIA.pfx'),
     passphrase: '20202020',
@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
     var result = convert.xml2json(manifestacao.resXml, options)
     const objetoResXmlJson = JSON.parse(result)
     var qtdEventos = 0;
-  
+
     if (lote.length == 1484866) {
       console.log("teste")
     } else if (lote.length > 0) {
@@ -71,7 +71,7 @@ module.exports = async (req, res) => {
         xMotivo = objetoResXmlJson['soap:Envelope']['soap:Body']['nfeRecepcaoEventoNFResult']['retEnvEvento']['retEvento']['infEvento']['xMotivo']["_text"];
       } else {
         const eventos = objetoResXmlJson['soap:Envelope']['soap:Body']['nfeRecepcaoEventoNFResult']['retEnvEvento']['retEvento'];
-  
+
         eventos.forEach((evento) => {
           xMotivo = xMotivo + '\n' + 'NFE: ' + evento.infEvento.chNFe['_text'] + "    -->" + evento.infEvento.xMotivo['_text'];
           qtdEventos = qtdEventos + 1;
@@ -111,46 +111,29 @@ module.exports = async (req, res) => {
               username: 'ftp_prod_C3JP5M',
               password: 'B4vqXSHkizVTDDX7FylC9y2o'
             };
-  
-            sftp.connect({
-              host: 'michelrocha111630.rm.cloudtotvs.com.br',
-              port: 2323,
-              username: 'ftp_prod_C3JP5M',
-              password: 'B4vqXSHkizVTDDX7FylC9y2o'
-            }).then(() => {
-              return Promise.all(files.map(file => {
-                const localPath = `./${Math.random().toString(36).substring(7)}.xml`;
-            
-                return new Promise((resolve, reject) => {
-                    fs.writeFile(localPath, file.content, err => {
-                        if (err) reject(err);
-                        else resolve(localPath);
-                    });
-                }).then(localPath => {
-                    return sftp.put(localPath, file.remote).then(() => {
-                        fs.unlinkSync(localPath);
-                    });
-                });
-            })).then(() => {
-                console.log('Arquivos enviados com sucesso!');
-                sftp.end();
-            }).catch((err) => {
-                console.error(err.message);
-                sftp.end();
-            });
-            }).then(() => {
+
+            const sftp = new SftpClient();
+
+            try {
+              await sftp.connect(config);
+
+              await Promise.all(files.map(async (file) => {
+                await sftp.put(Buffer.from(file.content), file.remote);
+              }));
+
               console.log('Arquivos enviados com sucesso!');
-              sftp.end();
-            }).catch((err) => {
+            } catch (err) {
               console.error(err.message);
+            } finally {
               sftp.end();
-            });
+            }
+
           }
           enviarArquivo();
 
           if (arquivosXml.length >= 1) {
             nfesManifestadas.forEach(element => {
-              var atualizarNsus = atualizarNsu({id:element})
+              var atualizarNsus = atualizarNsu({ id: element })
             });
 
             arquivosXml.push('respostaEventos' + xMotivo);
