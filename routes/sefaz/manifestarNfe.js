@@ -120,17 +120,24 @@ module.exports = async (req, res) => {
             }).then(() => {
               return Promise.all(files.map(file => {
                 const localPath = `./${Math.random().toString(36).substring(7)}.xml`;
+            
                 return new Promise((resolve, reject) => {
-                  fs.writeFile(localPath, file.content, err => {
-                    if (err) reject(err);
-                    resolve(localPath);
-                  });
+                    fs.writeFile(localPath, file.content, err => {
+                        if (err) reject(err);
+                        else resolve(localPath);
+                    });
                 }).then(localPath => {
-                  return sftp.put(localPath, file.remote).then(() => {
-                    fs.unlinkSync(localPath);
-                  });
+                    return sftp.put(localPath, file.remote).then(() => {
+                        fs.unlinkSync(localPath);
+                    });
                 });
-              }));
+            })).then(() => {
+                console.log('Arquivos enviados com sucesso!');
+                sftp.end();
+            }).catch((err) => {
+                console.error(err.message);
+                sftp.end();
+            });
             }).then(() => {
               console.log('Arquivos enviados com sucesso!');
               sftp.end();
