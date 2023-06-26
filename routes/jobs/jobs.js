@@ -18,35 +18,45 @@ module.exports = async () => {
 
   // Cria uma regra de agendamento que executa o job a cada minuto, durante todo o dia
   const rule = new schedule.RecurrenceRule();
-  rule.minute = [0,15,30,45];
+  rule.minute = [00,15,30,41,52];
   rule.second = 0;
   rule.hour = new schedule.Range(0, 23);
 
   // Agende o job de acordo com a regra de agendamento criada
   const job = schedule.scheduleJob(rule, async function () {
-    const informacoesManifesto = await consultarInformacoesManifesto({ id: '6417ae15ca08c5eedc2482d6' })
-    let lastNsuDatabase = informacoesManifesto ? informacoesManifesto.maxNsuDatabase : null;
-    let lastJobRun = informacoesManifesto ? informacoesManifesto.lastJobRun : null;
-    if (lastJobRun !== null) {
-      stringDoBanco = lastJobRun
-      dataDoBanco = new Date(stringDoBanco);
-      now = new Date();
-      diferencaEmMilissegundos = now - dataDoBanco;
-      diferencaEsperadaEmMilissegundos = 3900000; // 01 hora e 05 minutos em milisegundos
-      diferencaEhIgualOuMaior = diferencaEmMilissegundos >= diferencaEsperadaEmMilissegundos;
+    const listaUsuarios = ['23935237000160'] //adiconar aqui no _id do usuario
+    var cnpjUsuario = '';
+    var nomeCertificado = '';
+    for (const usuarioId of listaUsuarios) {
+      const informacoesManifesto = await consultarInformacoesManifesto({ id: usuarioId });
+      let lastNsuDatabase = informacoesManifesto ? informacoesManifesto.maxNsuDatabase : null;
+      let lastJobRun = informacoesManifesto ? informacoesManifesto.lastJobRun : null;
+      if (lastJobRun !== null) {
+        stringDoBanco = lastJobRun
+        dataDoBanco = new Date(stringDoBanco);
+        now = new Date();
+        diferencaEmMilissegundos = now - dataDoBanco;
+        diferencaEsperadaEmMilissegundos = 3900000; // 01 hora e 05 minutos em milisegundos
+        diferencaEhIgualOuMaior = diferencaEmMilissegundos >= diferencaEsperadaEmMilissegundos;
 
-      if (diferencaEhIgualOuMaior)
-      {
-      if (lastNsuDatabase != null) {
-        const consultaUltNsu = await consultaUltimaNsu({ nsuNfe: lastNsuDatabase })
-        var a = await updateDatabase({ id: '6417ae15ca08c5eedc2482d6', lastJobRun: now })
+       if (diferencaEhIgualOuMaior) {
+          if (lastNsuDatabase != null) {
+            if (usuarioId == '17828802000197') {
+               cnpjUsuario = '17828802000197';
+               nomeCertificado = 'MILENGENHARIA.pfx';
+            } else {
+               cnpjUsuario = '23935237000160';
+               nomeCertificado = 'VOA TELECOMUNICACOES LTDA (2).pfx';
+            }
+            const consultaUltNsu = await consultaUltimaNsu({ nsuNfe: lastNsuDatabase ,cnpj: cnpjUsuario, nomeCertificado: nomeCertificado})
+            var a = await updateDatabase({ id: '6417ae15ca08c5eedc2482d6', lastJobRun: now, cnpj: cnpjUsuario })
       }
-      }
+       }
+     }
+      console.log(diferencaEmMilissegundos)
+      console.log(now.toString());
+      console.log('Tentativa de realizar job por tempo realizada - ' + 'Status Tentativa: ' + diferencaEhIgualOuMaior);
     }
-    console.log(diferencaEmMilissegundos)
-    console.log(diferencaEhIgualOuMaior)
-    console.log(now.toString());
-    console.log('Executando o job...');
   })
 };
 

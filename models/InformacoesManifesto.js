@@ -16,6 +16,9 @@ const InformacoesManifestoSchema = new Schema({
   },
   lastJobRun:{
     type: String
+  },
+  cnpj:{
+    type: String
   }
 });
 

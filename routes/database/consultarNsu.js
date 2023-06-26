@@ -5,21 +5,21 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const Nsu = require('../../models/Nsu')
 
-//---consulta a tabela informcoesManifesto, BD---//
+//---consulta a tabela informacoesManifesto, BD---//
 module.exports = async (req, res) => {
   try {
-    const resposta = [];
-    const info = await Nsu.find();
-    if (!info) {
+    var cnpj = '';
+    cnpj = req.query && req.query.cnpj ? parseInt(req.query.cnpj) : parseInt(req);
+
+
+    const info = await Nsu.find({ cnpjUsuario: cnpj }).lean().select('-__v'); // seleciona todos os campos, exceto __v
+    if (!info || info.length === 0) {
       return null;
     } else {
-      for (let i = 0; i < info.length; i++) {
-        resposta.push(info[i]._doc);
-      }
       if (res) {
-        res.status(200).json(resposta)
+        res.status(200).json(info);
       } else {
-        return resposta;
+        return info;
       }
     }
   } catch (error) {
@@ -27,3 +27,8 @@ module.exports = async (req, res) => {
     return null;
   }
 };
+
+
+
+
+

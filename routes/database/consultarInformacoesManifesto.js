@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
         id = req.params.id
     }
     try {
-        const info = await InformacoesManifesto.findOne({ _id: id })
+        const info = await InformacoesManifesto.findOne({ cnpj: id })
         if (!req.params) {
             return info;
         } else {

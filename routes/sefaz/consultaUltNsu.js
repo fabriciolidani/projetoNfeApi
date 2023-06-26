@@ -3,6 +3,7 @@ const fs = require('fs');
 const zlib = require('zlib');
 const convert = require('xml-js');
 const { DistribuicaoDFe, RecepcaoEvento } = require('node-mde');
+const forge = require('node-forge');
 const consultarNsu = require('../database/consultarNsu');
 const adicionarNsu = require('../database/adicionarNsu');
 
@@ -10,29 +11,64 @@ module.exports = async (req, res) => {
   //julio no rota api rm
   //const testeCNPJ = await consultaCnpjTeste("37700472000167")
   var nsuNfe = ""
+  var cnpjUsuario = ''
+  var nomeCertificado = ''
+  var senhaCertificado = ''
   if (req.params) {
-     nsuNfe = req.params.nsuNfe;
+    nsuNfe = req.params.nsuNfe;
+    cnpjUsuario = req.params.cnpj;
+    nomeCertificado = req.params.nomeCertificado;
+    senhaCertificado = cnpjUsuario == '17828802000197' ? '20202020' : '35612029'
   } else {
     nsuNfe = req.nsuNfe
+    cnpjUsuario = req.cnpj;
+    nomeCertificado = req.nomeCertificado;
+    senhaCertificado = cnpjUsuario == '17828802000197' ? '20202020' : '35612029'
   }
-  //console.log(nsuNfe)
   try {
     var resposta = []
-    const findNsus = await consultarNsu()
+    const findNsus = await consultarNsu(cnpjUsuario)
 
-    findNsus.forEach(element => {
-      resposta.push(element.idNsu + "||" + element.cnpj + "||" + element.nome + "||" + element.nfe + "||" + element.valor + "||" + element.tipo + "||" + element.situacao + "||" + element.numero + "||" + element.ie + "||" + element.emissao + "||" + element.manifestado)
-    });
 
-    const distribuicao = new DistribuicaoDFe({
-      pfx: fs.readFileSync('./arquivos/MILENGENHARIA.pfx'),
-      passphrase: '20202020',
-      cnpj: '17828802000197',
+    if (findNsus !== null) {
+  findNsus.forEach((element) => {
+    resposta.push(element.idNsu + "||" + element.cnpj + "||" + element.nome + "||" + element.nfe + "||" + element.valor + "||" + element.tipo + "||" + element.situacao + "||" + element.numero + "||" + element.ie + "||" + element.emissao + "||" + element.manifestado);
+  });
+    }
+    var keyData = ""
+    var password = ""
+    var encryptedPrivateKey = ""
+    var privateKey = ""
+    var distribuicao = ""
+    if (cnpjUsuario == '17828802000197') {
+
+    distribuicao = new DistribuicaoDFe({
+      cert: fs.readFileSync('./uploads/MILENGENHARIA.pfx' ),
+      passphrase: senhaCertificado,
+      //key: privateKey,
+      cnpj: cnpjUsuario,
       cUFAutor: '43',
       tpAmb: '1',
     })
-    //const consulta = await distribuicao.consultaUltNSU('000000000009530')
+    }
+    else {
+      keyData = fs.readFileSync('./uploads/key.pem', 'utf8');
+      password = '35612029'; // Substituir a senha
+      // Descriptografando a chave privada
+      encryptedPrivateKey = forge.pki.decryptRsaPrivateKey(keyData, password);
+      // Convertendo a chave descriptografada para um formato utilizável
+      privateKey = forge.pki.privateKeyToPem(encryptedPrivateKey);
+      distribuicao = new DistribuicaoDFe({
+      cert: fs.readFileSync('./uploads/cert.pem' ),
+      //passphrase: senhaCertificado,
+      key: privateKey,
+      cnpj: cnpjUsuario,
+      cUFAutor: '43',
+      tpAmb: '1',
+    })
+    }
     const consulta = await distribuicao.consultaUltNSU(nsuNfe)
+    //const consulta = await distribuicao.consultaUltNSU(nsuNfe)
     const maxNsu = consulta.data.maxNSU
     if (consulta.error) {
       throw new Error(consulta.error)
@@ -71,7 +107,8 @@ module.exports = async (req, res) => {
             situacao: objetoTipo["resNFe"]["cSitNFe"]["_text"],
             numero: objetoTipo["resNFe"]["nProt"]["_text"],
             ie: objetoTipo["resNFe"]["IE"]["_text"],
-            emissao: objetoTipo["resNFe"]["dhEmi"]["_text"]
+            emissao: objetoTipo["resNFe"]["dhEmi"]["_text"],
+            cnpjUsuario: parseFloat(cnpjUsuario)
           }
           const stringProcurada = objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"][i]["_attributes"]["NSU"]
           const stringExisteNoArray = resposta.some(objeto =>

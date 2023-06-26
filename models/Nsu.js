@@ -45,6 +45,10 @@ const NsuSchema = new Schema({
     manifestado: {
         type: String,
         //required: true
+    },
+    cnpjUsuario: {
+        type: Number,
+        //required: true
     }
 });
 

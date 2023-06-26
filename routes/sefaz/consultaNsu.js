@@ -5,19 +5,49 @@ const convert = require('xml-js');
 const { DistribuicaoDFe, RecepcaoEvento } = require('node-mde');
 const adicionarNsu = require('../database/adicionarNsu');
 const consultarNsu = require('../database/consultarNsu');
+const forge = require('node-forge');
 
 //---consulta NSU API SEFAZ---//
 module.exports = async (req, res) => {
     var tipo = req.body.tipo;
     const nsu = req.body.nsu;
+    const cnpjUsuario = req.body.cnpj;
+    const nomeCertificado = req.body.nomeCertificado;
+    const senhaCertificado = cnpjUsuario == '17828802000197' ? '20202020' : '35612029'
     try {
-        const distribuicao = new DistribuicaoDFe({
-            pfx: fs.readFileSync('./arquivos/MILENGENHARIA.pfx'),
-            passphrase: '20202020',
-            cnpj: '17828802000197',
-            cUFAutor: '43',
-            tpAmb: '1',
-        })
+
+        var keyData = ""
+        var password = ""
+        var encryptedPrivateKey = ""
+        var privateKey = ""
+        var distribuicao = ""
+        if (cnpjUsuario == '17828802000197') {
+
+            distribuicao = new DistribuicaoDFe({
+              cert: fs.readFileSync('./uploads/MILENGENHARIA.pfx' ),
+              passphrase: senhaCertificado,
+              //key: privateKey,
+              cnpj: cnpjUsuario,
+              cUFAutor: '43',
+              tpAmb: '1',
+            })
+            }
+            else {
+              keyData = fs.readFileSync('./uploads/key.pem', 'utf8');
+              password = '35612029'; // Substituir a senha
+              // Descriptografando a chave privada
+              encryptedPrivateKey = forge.pki.decryptRsaPrivateKey(keyData, password);
+              // Convertendo a chave descriptografada para um formato utilizável
+              privateKey = forge.pki.privateKeyToPem(encryptedPrivateKey);
+              distribuicao = new DistribuicaoDFe({
+              cert: fs.readFileSync('./uploads/cert.pem' ),
+              //passphrase: senhaCertificado,
+              key: privateKey,
+              cnpj: cnpjUsuario,
+              cUFAutor: '43',
+              tpAmb: '1',
+            })
+            }
 
         const consulta = await distribuicao.consultaNSU(nsu)
 
@@ -84,22 +114,28 @@ module.exports = async (req, res) => {
                             situacao: objetoTipo["resNFe"]["cSitNFe"]["_text"],
                             numero: objetoTipo["resNFe"]["nProt"]["_text"],
                             ie: objetoTipo["resNFe"]["IE"]["_text"],
-                            emissao: objetoTipo["resNFe"]["dhEmi"]["_text"]
+                            emissao: objetoTipo["resNFe"]["dhEmi"]["_text"],
+                            cnpjUsuario: parseFloat(cnpjUsuario)
                         }
                         const stringProcurada = objetoResXmlJson["soap:Envelope"]["soap:Body"]["nfeDistDFeInteresseResponse"]["nfeDistDFeInteresseResult"]["retDistDFeInt"]["loteDistDFeInt"]["docZip"]["_attributes"]["NSU"]
                         const stringExisteNoArray = resposta.some(objeto =>
                             objeto.includes(stringProcurada)
                         );
-                        if (!stringExisteNoArray) {
-                            const testeAdicao = adicionarNsu(criarNsu)
+                        const testeAdicao = adicionarNsu(criarNsu)
                             const testeQ = "asdsadsa";
+                        if (!stringExisteNoArray) {
+
                         }
                     }
                 }
             }
         }
         if (tipo == '1'){
-            const findNsus = await consultarNsu()
+            const findNsus = await consultarNsu({
+                params: {
+                  cnpj: cnpjUsuario
+                }
+              })
 
             findNsus.forEach(element => {
                 if (element.idNsu > nsu) {

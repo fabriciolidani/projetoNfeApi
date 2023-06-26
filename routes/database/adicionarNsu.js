@@ -18,6 +18,7 @@ module.exports = async (req, res) => {
     const numero = req.numero
     const ie = req.ie
     const emissao = req.emissao
+    const cnpjUsuario = req.cnpjUsuario
 
     const novaNsu = {
         idNsu,
@@ -29,7 +30,8 @@ module.exports = async (req, res) => {
         situacao,
         numero,
         ie,
-        emissao
+        emissao,
+        cnpjUsuario
     }
     try {
         const testeAd = await Nsu.create(novaNsu)

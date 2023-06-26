@@ -4,14 +4,43 @@ const unzipper = require('unzipper');
 
 module.exports = async (req, res) => {
   const chNfe = req.params.chNfe;
-  const distribuicao = new DistribuicaoDFe({
-    pfx: fs.readFileSync('../arquivos/MILENGENHARIA.pfx'),
-    passphrase: '20202020',
-    cnpj: '17828802000197',
-    cUFAutor: '43',
-    'tpDown': 'X',
-    tpAmb: '1',
-  })
+  const cnpjUsuario = req.params.cnpjUsuario;
+
+  var keyData = ""
+  var password = ""
+  var encryptedPrivateKey = ""
+  var privateKey = ""
+  var distribuicao = ""
+  if (cnpjUsuario == '17828802000197') {
+
+    distribuicao = new DistribuicaoDFe({
+      cert: fs.readFileSync('./uploads/MILENGENHARIA.pfx' ),
+      passphrase: '20202020',
+      //key: privateKey,
+      cnpj: cnpjUsuario,
+      cUFAutor: '43',
+      'tpDown': 'X',
+      tpAmb: '1',
+    })
+    }
+    else {
+      keyData = fs.readFileSync('./uploads/key.pem', 'utf8');
+      password = '35612029'; // Substituir a senha
+      // Descriptografando a chave privada
+      encryptedPrivateKey = forge.pki.decryptRsaPrivateKey(keyData, password);
+      // Convertendo a chave descriptografada para um formato utilizável
+      privateKey = forge.pki.privateKeyToPem(encryptedPrivateKey);
+      distribuicao = new DistribuicaoDFe({
+      cert: fs.readFileSync('./uploads/cert.pem' ),
+      //passphrase: senhaCertificado,
+      key: privateKey,
+      cnpj: cnpjUsuario,
+      cUFAutor: '43',
+      'tpDown': 'X',
+      tpAmb: '1',
+    })
+  }
+
   try {
     const consulta = await distribuicao.consultaChNFe(
       chNfe

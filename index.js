@@ -5,42 +5,99 @@ const cors = require('cors')
 const schedule = require('node-schedule');
 const executarJob = require('./routes/jobs/jobs'); // caminho para o arquivo jobs.js
 const InformacoesManifesto = require('./models/InformacoesManifesto')
+const Login = require('./models/Login')
 const Nsu = require('./models/Nsu')
+const jwt = require('jsonwebtoken')
+const SECRET = "SEGREDODEESTADO"
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: 'uploads/',
+  filename: function (req, file, cb) {
+    // Obtém o nome original do arquivo
+    const originalName = file.originalname;
+    
+    // Define o nome do arquivo com a extensão .pfx
+    //const filename = originalName.split('.').slice(0, -1).join('.') + '.pfx';
 
+    cb(null, originalName);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+/*
 async function atualizarMaxNsuDatabase() {
   const maxIdNsu = await Nsu.find().sort({ idNsu: -1 }).limit(1).exec();
   const maxNsu = maxIdNsu[0].idNsu;
   await InformacoesManifesto.updateOne({}, { maxNsuDatabase: maxNsu }).exec();
   //console.log("Atualizando campo maxNsuDatabase")
 }
+*/
+
+async function atualizarMaxNsuDatabase() {
+  try {
+    const logins = await Login.find().exec();
+
+    for (const login of logins) {
+      const maxIdNsu = await Nsu.find({ cnpjUsuario: login.usuario }).sort({ idNsu: -1 }).limit(1).exec();
+      const maxNsu = maxIdNsu[0].idNsu;
+
+      await InformacoesManifesto.updateOne({ cnpj: login.usuario }, { maxNsuDatabase: maxNsu }).exec();
+    }
+
+    console.log("Atualização concluída: maxNsuDatabase atualizado para todos os logins.");
+  } catch (error) {
+    console.error("Ocorreu um erro ao atualizar maxNsuDatabase:", error);
+  }
+}
+
 executarJob();
-setInterval(atualizarMaxNsuDatabase, 10000); // atualiza a cada 10 segundos
+setInterval(atualizarMaxNsuDatabase, 60000); // atualiza a cada 10 segundos
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-///////////////////////////--APICNPJ--///////////////////////////
+
+function verifyJWT(req, res, next){
+  const token = req.headers['x-access-token'];
+  if (!token) return res.status(200).json({ auth: false, message: 'Sessão expirada, você será redirecionado para a tela de Login' });
+
+  jwt.verify(token, SECRET, function(err, decoded) {
+    if (err) return res.status(200).json({ auth: false, message: 'Sessão expirada, você será redirecionado para a tela de Login' });
+
+    // se tudo estiver ok, salva no request para uso posterior
+    req.userId = decoded.id;
+    next();
+  });
+}
+
+///////////////////////////--LOGIN--///////////////////////////
+
+const login =
+require('./routes/login/consultarLogin');
+app.post('/consultarLogin', upload.single('certificado'), login);
+
+///////////////////////////--APICNPJ--/////////////////////////
 const consultaCNPJ = require('./routes/sefaz/consultaCNPJ');
-app.post('/consultaCNPJ/:cnpj', consultaCNPJ);
+app.post('/consultaCNPJ', consultaCNPJ);
 
 ///////////////////////////--SEFAZ--///////////////////////////
 const consultaChNFe = require('./routes/sefaz/consultaChNfe');
 app.post('/consultaChNFe/:chNfe', consultaChNFe);
 
-
 const persistirInformacoesRm = require('./routes/sefaz/persistirInformacoesRm');
 app.post('/persistirInformacoesRm/:corpoSaveRecordRm', persistirInformacoesRm);
-
 
 const manifestarNFE = require('./routes/sefaz/manifestarNfe');
 app.post('/manifestarNFE/:valoresSelecionados', manifestarNFE);
 
 const consultaUltNSU = require('./routes/sefaz/consultaUltNsu');
-app.post('/consultaUltNSU/:nsuNfe', consultaUltNSU);
+app.post('/consultaUltNSU/:nsuNfe',verifyJWT, consultaUltNSU);
 
 const consultaNSU = require('./routes/sefaz/consultaNsu');
-app.post('/consultaNSU/:nsu', consultaNSU);
+app.post('/consultaNSU/:nsu',verifyJWT, consultaNSU);
+
 
 ///////////////////////////--DATABASE--///////////////////////////
 const consultarInformacoesManifesto = require('./routes/database/consultarInformacoesManifesto');
@@ -50,10 +107,10 @@ const atualizarInformacoesManifesto = require('./routes/database/atualizarInform
 app.patch('/informacoesManifesto/:id', atualizarInformacoesManifesto);
 
 const consultarNsuDatabase = require('./routes/database/consultarNsu');
-app.get('/consultarNsuDatabase', consultarNsuDatabase);
+app.get('/consultarNsuDatabase', verifyJWT, consultarNsuDatabase);
 
 //rota inicial / endpoint
-app.get('/', (req, res) => {
+app.get('/', verifyJWT, (req, res) => {
   res.json({ message: "oi Express" })
 })
 // defina um middleware de redirecionamento

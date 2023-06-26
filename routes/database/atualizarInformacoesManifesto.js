@@ -11,16 +11,19 @@ module.exports =  async (req, res) => {
   var sequencialValor = ""
   var ultNsuValor = ""
   var lastJobRunValor = ""
-  var info= ""
+  var info = ""
+  var valorCnpj = ""
   if (!req.params) {
     idValor = req.id
     lastJobRunValor = req.lastJobRun
+    valorCnpj = req.cnpjUsuario
     sequencialValor =  null;
     ultNsuValor = null;
   } else {
-    idValor =  req.params.id;
+    idValor = req.params.id; // acertar é cnpj
     sequencialValor = req.body.payload.sequencial ? req.body.payload.sequencial : null;
     ultNsuValor = req.body.payload.ultNsu ? req.body.payload.ultNsu : null;
+    valorCnpj = req.body.payload.cnpjUsuario ? req.body.payload.cnpjUsuario : null;
   }
 
   if (!req.params) {
@@ -45,7 +48,7 @@ module.exports =  async (req, res) => {
     }
   }
   try {
-    const updatedInfo = await InformacoesManifesto.updateOne({ _id: idValor }, info)
+    const updatedInfo = await InformacoesManifesto.updateMany({ cnpj: idValor }, info);
     /**
     if (updatedInfo.matchedCount === 0) {
       if (lastJobRun) {
