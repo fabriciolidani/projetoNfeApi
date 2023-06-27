@@ -75,7 +75,7 @@ function verifyJWT(req, res, next){
 ///////////////////////////--LOGIN--///////////////////////////
 
 const login =
-require('./routes/login/consultarLogin');
+require('./routes/login/consultarlogin');
 app.post('/consultarLogin', upload.single('certificado'), login);
 
 ///////////////////////////--APICNPJ--/////////////////////////
