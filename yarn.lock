@@ -935,6 +935,11 @@
   "resolved" "https://registry.npmjs.org/buffers/-/buffers-0.1.1.tgz"
   "version" "0.1.1"
 
+"buildcheck@0.0.3":
+  "integrity" "sha512-pziaA+p/wdVImfcbsZLNF32EiWyujlQLwolMqUQE8xpKNOH7KmZQaY8sXN7DGOEzPAElo9QTaeNRfGnf3iOJbA=="
+  "resolved" "https://registry.npmjs.org/buildcheck/-/buildcheck-0.0.3.tgz"
+  "version" "0.0.3"
+
 "busboy@^1.0.0":
   "integrity" "sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA=="
   "resolved" "https://registry.npmjs.org/busboy/-/busboy-1.6.0.tgz"
@@ -1050,6 +1055,14 @@
   dependencies:
     "object-assign" "^4"
     "vary" "^1"
+
+"cpu-features@~0.0.4":
+  "integrity" "sha512-fKiZ/zp1mUwQbnzb9IghXtHtDoTMtNeb8oYGx6kX2SYfhnG0HNdBEBIzB9b5KlXu5DQPhfy3mInbBxFcgwAr3A=="
+  "resolved" "https://registry.npmjs.org/cpu-features/-/cpu-features-0.0.4.tgz"
+  "version" "0.0.4"
+  dependencies:
+    "buildcheck" "0.0.3"
+    "nan" "^2.15.0"
 
 "cron-parser@^4.2.0":
   "integrity" "sha512-jbokKWGcyU4gl6jAfX97E1gDpY12DJ1cLJZmoDzaAln/shZ+S3KBFBuA2Q6WeUN4gJf/8klnV1EfvhA2lK5IRQ=="
@@ -1575,6 +1588,11 @@
     "object-assign" "^4.1.1"
     "type-is" "^1.6.4"
     "xtend" "^4.0.0"
+
+"nan@^2.15.0", "nan@^2.16.0":
+  "integrity" "sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ=="
+  "resolved" "https://registry.npmjs.org/nan/-/nan-2.17.0.tgz"
+  "version" "2.17.0"
 
 "negotiator@0.6.3":
   "integrity" "sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg=="

@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
     if (cnpjUsuario == '17828802000197') {
 
     distribuicao = new DistribuicaoDFe({
-      cert: fs.readFileSync('./uploads/MILENGENHARIA.pfx' ),
+      pfx: fs.readFileSync('./uploads/MILENGENHARIA.pfx' ),
       passphrase: senhaCertificado,
       //key: privateKey,
       cnpj: cnpjUsuario,
@@ -105,7 +105,7 @@ module.exports = async (req, res) => {
             valor: objetoTipo["resNFe"]["vNF"]["_text"],
             tipo: objetoTipo["resNFe"]["tpNF"]["_text"],
             situacao: objetoTipo["resNFe"]["cSitNFe"]["_text"],
-            numero: objetoTipo["resNFe"]["nProt"]["_text"],
+            numero: objetoTipo["resNFe"]["nNF"]["_text"],
             ie: objetoTipo["resNFe"]["IE"]["_text"],
             emissao: objetoTipo["resNFe"]["dhEmi"]["_text"],
             cnpjUsuario: parseFloat(cnpjUsuario)

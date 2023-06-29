@@ -84,13 +84,13 @@ app.post('/consultaCNPJ', consultaCNPJ);
 
 ///////////////////////////--SEFAZ--///////////////////////////
 const consultaChNFe = require('./routes/sefaz/consultaChNfe');
-app.post('/consultaChNFe/:chNfe', consultaChNFe);
+app.post('/consultaChNFe/:chNfe',verifyJWT, consultaChNFe);
 
 const persistirInformacoesRm = require('./routes/sefaz/persistirInformacoesRm');
 app.post('/persistirInformacoesRm/:corpoSaveRecordRm', persistirInformacoesRm);
 
 const manifestarNFE = require('./routes/sefaz/manifestarNfe');
-app.post('/manifestarNFE/:valoresSelecionados', manifestarNFE);
+app.post('/manifestarNFE/:valoresSelecionados',verifyJWT, manifestarNFE);
 
 const consultaUltNSU = require('./routes/sefaz/consultaUltNsu');
 app.post('/consultaUltNSU/:nsuNfe',verifyJWT, consultaUltNSU);

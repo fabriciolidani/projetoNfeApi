@@ -18,13 +18,13 @@ module.exports = async () => {
 
   // Cria uma regra de agendamento que executa o job a cada minuto, durante todo o dia
   const rule = new schedule.RecurrenceRule();
-  rule.minute = [00,15,30,41,52];
+  rule.minute = [00,13,30,41,52];
   rule.second = 0;
   rule.hour = new schedule.Range(0, 23);
 
   // Agende o job de acordo com a regra de agendamento criada
   const job = schedule.scheduleJob(rule, async function () {
-    const listaUsuarios = ['23935237000160'] //adiconar aqui no _id do usuario
+    const listaUsuarios = ['17828802000197'] //adiconar aqui no _id do usuario
     var cnpjUsuario = '';
     var nomeCertificado = '';
     for (const usuarioId of listaUsuarios) {

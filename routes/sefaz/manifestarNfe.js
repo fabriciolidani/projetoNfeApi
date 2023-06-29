@@ -22,6 +22,7 @@ module.exports = async (req, res) => {
   const valoresSelecionados = req.params.valoresSelecionados;
   const sequencial = parseInt(req.body.payload.sequencial);
   const tipoManifestacao = parseInt(req.body.payload.tipoManifestacao);
+  var token = parseInt(req.body.payload.token);
   var cnpjUsuario = req.body.payload.cnpjUsuario;
   const valores = [];
   var files = [];
