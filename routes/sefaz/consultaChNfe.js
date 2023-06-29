@@ -3,6 +3,7 @@ const { DistribuicaoDFe, RecepcaoEvento } = require('node-mde')
 const unzipper = require('unzipper');
 const convert = require('xml-js');
 const { DOMParser } = require('xmldom');
+const forge = require('node-forge');
 
 module.exports = async (req, res) => {
   const chNfe = req.params.chNfe;
