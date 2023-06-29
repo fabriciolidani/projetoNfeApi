@@ -1,7 +1,7 @@
 AUTOMATIZACAO RECONECÇÃO AUTOMATICA DA APLICAÇÃO NO SERVER COM PM2:
 
-pm2 start npm --name pm2Api -- start --watch
-pm2 startup
+pm2 start npm --name pm2Api -- start              // --watch NÃO FUNCIONA NESSE CONTEXTO
+pm2 startup - NÃO USAR
 pm2 save
 
 OBS: SE NÃO FUNCIONAR, NÃO UTILIZAR O pm2 startup

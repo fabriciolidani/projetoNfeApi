@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
   try {
     if (chNfe.lenght != 44 ) //tamanho da  chNFE
     {
-      if (chNfe.length !== 44) {
+      if (chNfe.length !== 44) { //precisa ter a segunda vez
          objRespostaIncorreta = {
           resposta: resposta
         }
@@ -85,9 +85,12 @@ module.exports = async (req, res) => {
     const xmlZip = consulta.data;
     if (xmlZip?.xMotivo)
     {
-      if (xmlZip.xMotivo.includes('Rejeição'))
-      {
-        res.status(500).send(xmlZip.xMotivo);
+      if (xmlZip.xMotivo.toLowerCase().includes('rejeicao')) {
+        objRespostaIncorreta = {
+          resposta: xmlZip.xMotivo.toString()
+        }
+        res.status(200).json(objRespostaIncorreta)
+        return
       }
     }
     const resNFe = consulta.data.docZip[0]?.xml;
