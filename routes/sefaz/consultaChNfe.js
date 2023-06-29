@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
   var resposta = [];
   var keyData = ""
   var password = ""
+  var objRespostaIncorreta = ""
   var encryptedPrivateKey = ""
   var privateKey = ""
   var distribuicao = ""
@@ -63,6 +64,17 @@ module.exports = async (req, res) => {
 */
 
   try {
+    if (chNfe.lenght != 44 ) //tamanho da  chNFE
+    {
+      if (chNfe.length !== 44) {
+         objRespostaIncorreta = {
+          resposta: resposta
+        }
+        res.status(200).json(objRespostaIncorreta)
+
+        return; // Encerra a execução do código para evitar que o restante do código seja executado
+      }
+    }
     const consulta = await distribuicao.consultaChNFe(
       chNfe
     )
