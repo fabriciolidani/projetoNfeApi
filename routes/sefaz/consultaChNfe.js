@@ -20,8 +20,8 @@ module.exports = async (req, res) => {
   if (cnpjUsuario == '17828802000197') {
 
     distribuicao = new DistribuicaoDFe({
-      pfx: fs.readFileSync('./uploads/MILENGENHARIA.pfx' ),
-      passphrase: '20202020',
+      pfx: fs.readFileSync('./uploads/MILENGENHARIANOVO.pfx' ),
+      passphrase: '33442225',
       //key: privateKey,
       cnpj: cnpjUsuario,
       cUFAutor: '43',

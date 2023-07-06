@@ -18,12 +18,12 @@ module.exports = async (req, res) => {
     nsuNfe = req.params.nsuNfe;
     cnpjUsuario = req.params.cnpj;
     nomeCertificado = req.params.nomeCertificado;
-    senhaCertificado = cnpjUsuario == '17828802000197' ? '20202020' : '35612029'
+    senhaCertificado = cnpjUsuario == '17828802000197' ? '33442225' : '35612029'
   } else {
     nsuNfe = req.nsuNfe
     cnpjUsuario = req.cnpj;
     nomeCertificado = req.nomeCertificado;
-    senhaCertificado = cnpjUsuario == '17828802000197' ? '20202020' : '35612029'
+    senhaCertificado = cnpjUsuario == '17828802000197' ? '33442225' : '35612029'
   }
   try {
     var resposta = []
@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
     if (cnpjUsuario == '17828802000197') {
 
     distribuicao = new DistribuicaoDFe({
-      cert: fs.readFileSync('./uploads/MILENGENHARIA.pfx' ),
+      pfx: fs.readFileSync('./uploads/MILENGENHARIANOVO.pfx' ),
       passphrase: senhaCertificado,
       //key: privateKey,
       cnpj: cnpjUsuario,

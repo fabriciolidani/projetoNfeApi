@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     const nsu = req.body.nsu;
     const cnpjUsuario = req.body.cnpj;
     const nomeCertificado = req.body.nomeCertificado;
-    const senhaCertificado = cnpjUsuario == '17828802000197' ? '20202020' : '35612029'
+    const senhaCertificado = cnpjUsuario == '17828802000197' ? '33442225' : '35612029'
     try {
 
         var keyData = ""
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
         if (cnpjUsuario == '17828802000197') {
 
             distribuicao = new DistribuicaoDFe({
-              cert: fs.readFileSync('./uploads/MILENGENHARIA.pfx' ),
+              cert: fs.readFileSync('./uploads/MILENGENHARIANOVO.pfx' ),
               passphrase: senhaCertificado,
               //key: privateKey,
               cnpj: cnpjUsuario,

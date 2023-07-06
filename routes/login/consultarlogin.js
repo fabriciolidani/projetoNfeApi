@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
     var cnpjEhCertDaEntidade = false;
     if (valorUsuario == '17828802000197')
     {
-      if (senhaCertificado.includes('2020'))
+      if (senhaCertificado.includes('2225'))
       {
         cnpjEhCertDaEntidade = true
       }

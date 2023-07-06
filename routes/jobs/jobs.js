@@ -18,7 +18,7 @@ module.exports = async () => {
 
   // Cria uma regra de agendamento que executa o job a cada minuto, durante todo o dia
   const rule = new schedule.RecurrenceRule();
-  rule.minute = [15];
+  rule.minute = [13];
   rule.second = 0;
   rule.hour = new schedule.Range(0, 23);
 
@@ -43,15 +43,15 @@ module.exports = async () => {
           if (lastNsuDatabase != null) {
             if (usuarioId == '17828802000197') {
                cnpjUsuario = '17828802000197';
-               nomeCertificado = 'MILENGENHARIA.pfx';
+               nomeCertificado = 'MILENGENHARIANOVO.pfx';
             } else {
                cnpjUsuario = '23935237000160';
                nomeCertificado = 'VOA TELECOMUNICACOES LTDA (2).pfx';
             }
             const consultaUltNsu = await consultaUltimaNsu({ nsuNfe: lastNsuDatabase ,cnpj: cnpjUsuario, nomeCertificado: nomeCertificado})
-            var a = await updateDatabase({ id: '6417ae15ca08c5eedc2482d6', lastJobRun: now, cnpj: cnpjUsuario })
+            var a = await updateDatabase({ id: usuarioId /*CNPJ*/, lastJobRun: now, cnpj: cnpjUsuario })
       }
-       }
+    }
      }
       console.log(diferencaEmMilissegundos)
       console.log(now.toString());
