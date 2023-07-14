@@ -18,8 +18,8 @@ module.exports = async () => {
 
   // Cria uma regra de agendamento que executa o job a cada minuto, durante todo o dia
   const rule = new schedule.RecurrenceRule();
-  rule.minute = [55];
-  rule.second = 30;
+  rule.minute = [49];
+  rule.second = 00;
   rule.hour = new schedule.Range(0, 23);
 
   // Agende o job de acordo com a regra de agendamento criada
@@ -48,7 +48,7 @@ module.exports = async () => {
                cnpjUsuario = '23935237000160';
                nomeCertificado = 'VOA TELECOMUNICACOES LTDA (2).pfx';
             }
-            const consultaUltNsu = await consultaUltimaNsu({ nsuNfe: lastNsuDatabase ,cnpj: cnpjUsuario, nomeCertificado: nomeCertificado})
+            //const consultaUltNsu = await consultaUltimaNsu({ nsuNfe: lastNsuDatabase ,cnpj: cnpjUsuario, nomeCertificado: nomeCertificado})
             var a = await updateDatabase({ id: usuarioId /*CNPJ*/, lastJobRun: now, cnpj: cnpjUsuario })
       }
     }
