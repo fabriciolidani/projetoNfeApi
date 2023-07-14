@@ -18,8 +18,8 @@ module.exports = async () => {
 
   // Cria uma regra de agendamento que executa o job a cada minuto, durante todo o dia
   const rule = new schedule.RecurrenceRule();
-  rule.minute = [13];
-  rule.second = 0;
+  rule.minute = [55];
+  rule.second = 30;
   rule.hour = new schedule.Range(0, 23);
 
   // Agende o job de acordo com a regra de agendamento criada
