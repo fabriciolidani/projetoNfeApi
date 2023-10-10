@@ -43,10 +43,10 @@ module.exports = async (req, res) => {
 
   if (cnpjUsuario == '17828802000197') //MilEngenharia
   {
-    valorHostFtp = 'michelrocha111630.rm.cloudtotvs.com.br',
+    valorHostFtp = 'michelrocha153211.rm.cloudtotvs.com.br',
     valorPortFtp = 2323,
     valorUsernameFtp = 'ftp_prod_C3JP5M',
-    valorPasswordFtp = 'B4vqXSHkizVTDDX7FylC9y2o'
+    valorPasswordFtp = 'd88ZCaSOvyChja0U4alD'
   }
   else {
     valorHostFtp = 'voatelecomunicacoes120049.rm.cloudtotvs.com.br',
