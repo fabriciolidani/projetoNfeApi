@@ -69,8 +69,13 @@ module.exports = async (req, res) => {
     })
     }
     const consulta = await distribuicao.consultaUltNSU(nsuNfe)
-    //const consulta = await distribuicao.consultaUltNSU(nsuNfe)
+    //const consulta = await distribuicao.consultaUltNSU("000000000016524")
     const maxNsu = consulta.data.maxNSU
+    console.log("A ultima NSU na api da nfe é: ");
+    
+    console.log(maxNsu)
+    console.log("A ultima na nossa base de dados é: ")
+    console.log(nsuNfe)
     if (consulta.error) {
       throw new Error(consulta.error)
     }

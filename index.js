@@ -38,11 +38,16 @@ async function atualizarMaxNsuDatabase() {
   try {
     const logins = await Login.find().exec();
 
+    
     for (const login of logins) {
+      if (login.usuario = '17828802000197') {
+        
+      
       const maxIdNsu = await Nsu.find({ cnpjUsuario: login.usuario }).sort({ idNsu: -1 }).limit(1).exec();
       const maxNsu = maxIdNsu[0].idNsu;
 
       await InformacoesManifesto.updateOne({ cnpj: login.usuario }, { maxNsuDatabase: maxNsu }).exec();
+    }
     }
 
     console.log("Atualização concluída: maxNsuDatabase atualizado para todos os logins.");
