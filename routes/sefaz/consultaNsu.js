@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     const nsu = req.body.nsu;
     const cnpjUsuario = req.body.cnpj;
     const nomeCertificado = req.body.nomeCertificado;
-    const senhaCertificado = cnpjUsuario == '17828802000197' ? '33442225' : '35612029'
+    const senhaCertificado = cnpjUsuario == '17828802000197' ? 'MIL@33442225' : '35612029'
     try {
 
         var keyData = ""

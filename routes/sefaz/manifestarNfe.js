@@ -60,7 +60,7 @@ module.exports = async (req, res) => {
     //DISTRIBUICAO
     distribuicao = new DistribuicaoDFe({
       pfx: fs.readFileSync('./uploads/MILENGENHARIANOVO.pfx'),
-      passphrase: '33442225',
+      passphrase: 'MIL@33442225',
       //key: privateKey,
       cnpj: cnpjUsuario,
       cUFAutor: '43',
@@ -98,7 +98,7 @@ module.exports = async (req, res) => {
     if (cnpjUsuario == '17828802000197') {
       recepcao = new RecepcaoEvento({
         pfx: fs.readFileSync('./uploads/MILENGENHARIANOVO.pfx'),
-        passphrase: '33442225',
+        passphrase: 'MIL@33442225',
         cnpj: '17828802000197',
         tpAmb: '1',
       })

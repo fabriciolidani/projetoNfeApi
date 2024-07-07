@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
 
     distribuicao = new DistribuicaoDFe({
       pfx: fs.readFileSync('./uploads/MILENGENHARIANOVO.pfx' ),
-      passphrase: '33442225',
+      passphrase: 'MIL@33442225',
       //key: privateKey,
       cnpj: cnpjUsuario,
       cUFAutor: '43',

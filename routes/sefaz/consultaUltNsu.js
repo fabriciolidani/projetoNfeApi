@@ -18,12 +18,12 @@ module.exports = async (req, res) => {
     nsuNfe = req.params.nsuNfe;
     cnpjUsuario = req.params.cnpj;
     nomeCertificado = req.params.nomeCertificado;
-    senhaCertificado = cnpjUsuario == '17828802000197' ? '33442225' : '35612029'
+    senhaCertificado = cnpjUsuario == '17828802000197' ? 'MIL@33442225' : '35612029'
   } else {
     nsuNfe = req.nsuNfe
     cnpjUsuario = req.cnpj;
     nomeCertificado = req.nomeCertificado;
-    senhaCertificado = cnpjUsuario == '17828802000197' ? '33442225' : '35612029'
+    senhaCertificado = cnpjUsuario == '17828802000197' ? 'MIL@33442225' : '35612029'
   }
   try {
     var resposta = []
